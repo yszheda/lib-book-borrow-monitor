@@ -83,11 +83,36 @@ class BookManager:
         with open(self.file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-    def add_book(self, book: Book) -> str:
-        """添加书籍"""
+    def add_book(self, book: Book) -> Tuple[str, bool]:
+        """添加书籍，已存在则更新
+        返回: (book_id, is_new)
+        """
+        # 检查是否已存在相同书籍（通过ISBN或标题+作者）
+        existing_book = self._find_existing_book(book)
+        if existing_book:
+            # 更新现有书籍
+            existing_book.title = book.title or existing_book.title
+            existing_book.isbn = book.isbn or existing_book.isbn
+            existing_book.author = book.author or existing_book.author
+            existing_book.monitor = book.monitor  # 监控状态按新的设置
+            self._save_books()
+            return existing_book.book_id, False  # 不是新的
+        
+        # 添加新书籍
         self.books[book.book_id] = book
         self._save_books()
-        return book.book_id
+        return book.book_id, True  # 是新的
+    
+    def _find_existing_book(self, book: Book) -> Optional[Book]:
+        """查找是否已存在相同书籍"""
+        for existing_book in self.books.values():
+            # 如果有ISBN，优先用ISBN匹配
+            if book.isbn and existing_book.isbn == book.isbn:
+                return existing_book
+            # 否则用标题匹配
+            if book.title and existing_book.title == book.title:
+                return existing_book
+        return None
 
     def remove_book(self, book_id: str) -> bool:
         """移除书籍"""

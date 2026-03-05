@@ -34,8 +34,11 @@ def add_book(
     book = Book(title=title, isbn=isbn, author=author)
     book.monitor = monitor
 
-    book_id = book_manager.add_book(book)
-    print(f"[OK] 已添加书籍: {book.title}")
+    book_id, is_new = book_manager.add_book(book)
+    if is_new:
+        print(f"[OK] 已添加书籍: {book.title}")
+    else:
+        print(f"[OK] 书籍已存在，已更新: {book.title}")
     print(f"   书籍ID: {book_id}")
     print(f"   监控状态: {'开启' if monitor else '关闭'}")
 

@@ -1,0 +1,33 @@
+# 图书馆配置
+library:
+  name: "深圳图书馆"
+  base_url: "https://www.szlib.org.cn/"
+  search_url: "https://www.szlib.org.cn/opac/"
+  timeout: 30
+
+# 定时任务配置
+scheduler:
+  enabled: true
+  interval_minutes: 30
+  retry_on_failure: true
+  max_retries: 3
+
+# 提醒配置
+notification:
+  enabled: true
+  methods:
+    - console
+    # - email  # 取消注释启用邮件提醒
+  # email:
+  #   smtp_server: smtp.qq.com
+  #   smtp_port: 587
+  #   sender: your_email@qq.com
+  #   password: your_smtp_password
+  #   recipients:
+  #     - recipient1@example.com
+  #     - recipient2@example.com
+
+# 数据存储配置
+storage:
+  book_list_file: "book_list.json"
+  status_cache_file: "status_cache.json"

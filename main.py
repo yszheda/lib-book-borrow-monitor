@@ -58,17 +58,20 @@ def list_books(config: Config):
     for i, book in enumerate(books, 1):
         status = "[可借]" if book.available else "[不可借]"
         monitor = "[监控中]" if book.monitor else "       "
-        locations = ", ".join(book.locations[:2]) if book.locations else "-"
 
-        print(f"{i}. {monitor} {status} {book.title}")
-        print(
-            f"   ID: {book.book_id} | 作者: {book.author or '-'} | ISBN: {book.isbn or '-'}"
-        )
+        print(f"\n{i}. {monitor} {status} {book.title}")
+        print(f"   ID: {book.book_id}")
+        if book.author:
+            print(f"   作者: {book.author}")
+        if book.isbn:
+            print(f"   ISBN: {book.isbn}")
         if book.locations:
-            print(f"   位置: {locations}")
+            print(f"   馆藏位置 ({len(book.locations)} 处):")
+            for j, loc in enumerate(book.locations, 1):
+                print(f"     {j}. {loc}")
         if book.last_checked:
             print(f"   最后检查: {book.last_checked}")
-        print()
+    print("-" * 80)
 
 
 def remove_book(config: Config, book_id: str):

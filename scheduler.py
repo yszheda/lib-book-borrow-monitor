@@ -48,12 +48,23 @@ class BookMonitor:
                 updated_book, status_changed = self.scraper.update_book_status(book)
                 self.book_manager.update_book(updated_book)
 
+                # 显示详细信息
                 status = "[可借]" if updated_book.available else "[不可借]"
-                print(f"  - {updated_book.title}: {status}")
+                print(f"\n  {updated_book.title} {status}")
+                if updated_book.author:
+                    print(f"    作者: {updated_book.author}")
+                if updated_book.isbn:
+                    print(f"    ISBN: {updated_book.isbn}")
+                if updated_book.locations:
+                    print(f"    馆藏位置 ({len(updated_book.locations)} 处):")
+                    for i, loc in enumerate(updated_book.locations, 1):
+                        print(f"      {i}. {loc}")
+                if updated_book.last_checked:
+                    print(f"    最后检查: {updated_book.last_checked}")
 
                 if status_changed and updated_book.available:
                     # 状态变为可借，发送提醒
-                    print(f"    [通知] {updated_book.title} 现在可借了！")
+                    print(f"\n    [通知] {updated_book.title} 现在可借了！")
                     if updated_book.monitor:
                         self.notifier.send_book_available(updated_book)
                         available_count += 1
@@ -61,9 +72,9 @@ class BookMonitor:
                 updated_count += 1
 
             except Exception as e:
-                print(f"  - 检查 {book.title} 时出错: {e}")
+                print(f"\n  - 检查 {book.title} 时出错: {e}")
 
-        print(f"检查完成！更新了 {updated_count} 本书，{available_count} 本新书可借")
+        print(f"\n检查完成！更新了 {updated_count} 本书，{available_count} 本新书可借")
 
     def check_monitoring_books(self):
         """仅检查正在监控的书籍"""
@@ -80,11 +91,11 @@ class BookMonitor:
                 self.book_manager.update_book(updated_book)
 
                 if status_changed and updated_book.available:
-                    print(f"[通知] {updated_book.title} 现在可借了！")
+                    print(f"\n[通知] {updated_book.title} 现在可借了！")
                     self.notifier.send_book_available(updated_book)
 
             except Exception as e:
-                print(f"检查 {book.title} 时出错: {e}")
+                print(f"\n检查 {book.title} 时出错: {e}")
 
     def start(self):
         """启动定时任务"""
